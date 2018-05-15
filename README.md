@@ -1,5 +1,7 @@
 # ClipboardToPNG
 
+Download: https://github.com/SilverEzhik/ClipboardToPNG/releases
+
 This is a tiny helper utility for fixing an annoyance I have with Photoshop on Windows - the fact that it does not handle transparency. 
 
 What this does is save the image as a .png file (located at `%TEMP%\clip.png`), and returns `0` if that successfully happened, and `1` if it didn't.
