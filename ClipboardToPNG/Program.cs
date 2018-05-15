@@ -62,6 +62,7 @@ namespace ClipboardToPNG
                             var ptr = new IntPtr((long)gch.AddrOfPinnedObject() + 40);
                             bmp = new Bitmap(w, h, w * 4, System.Drawing.Imaging.PixelFormat.Format32bppArgb, ptr);
                             bmp.RotateFlip(RotateFlipType.Rotate180FlipX);
+                            bmp.SetResolution(72, 72);
                             bmp.Save(path, ImageFormat.Png);
                             Debug.Print("saved dib");
                             return 0;
