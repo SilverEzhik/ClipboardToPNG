@@ -52,14 +52,21 @@ namespace ClipboardToPNG
                     var w = BitConverter.ToInt32(dib, 4);
                     var h = BitConverter.ToInt32(dib, 8);
                     var bpp = BitConverter.ToInt16(dib, 14);
-
-                    if (bpp == 32)
+                    var offset = 40;
+                    if (bpp == 32) // if 32 bit (has transparency)
                     {
-                        var gch = GCHandle.Alloc(dib, GCHandleType.Pinned);
+                        var test = BitConverter.ToInt64(dib, offset);
+                        var test2 = BitConverter.ToInt32(dib, offset + 8);
+                        //Debug.Print(test + "" + test2);
+                        if (test == 0x0000ff0000ff0000 && test2 == 0x000000ff)
+                        {
+                            offset += 12;
+                        }
+                            var gch = GCHandle.Alloc(dib, GCHandleType.Pinned);
                         Bitmap bmp = null;
                         try
                         {
-                            var ptr = new IntPtr((long)gch.AddrOfPinnedObject() + 40);
+                            var ptr = new IntPtr((long)gch.AddrOfPinnedObject() + offset);
                             bmp = new Bitmap(w, h, w * 4, System.Drawing.Imaging.PixelFormat.Format32bppArgb, ptr);
                             bmp.RotateFlip(RotateFlipType.Rotate180FlipX);
                             bmp.SetResolution(72, 72);
@@ -76,12 +83,8 @@ namespace ClipboardToPNG
                 }
             }
 
-            // if that all fails, just get the image and then write it to file (lose transparency)
-            var clip = data.GetImage();
-            Debug.Print("" + clip.RawFormat);
-            clip.Save(path, ImageFormat.Png);
-
-            return 0;
+            // if that all fails, paste as normal (avoids messing with dpi and such)
+            return 1;
         }
     }
 }
